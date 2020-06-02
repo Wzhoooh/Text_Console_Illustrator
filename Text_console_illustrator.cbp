@@ -31,6 +31,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="console_illustrator.cpp" />
+		<Unit filename="console_illustrator.hpp" />
+		<Unit filename="main.cpp" />
+		<Unit filename="tests/console_illustrator.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
