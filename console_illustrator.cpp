@@ -6,14 +6,10 @@
 using namespace ConsoleIllusrators;
 
 DoubleBufferedTextConsole::DoubleBufferedTextConsole(COORD leftTop, COORD size)
-    :  _leftTop(leftTop), _size(size), _firstBuffer(nullptr), _secondBuffer(nullptr)
+    :  _leftTop(leftTop), _size(size), _firstBuffer(nullptr), _secondBuffer(nullptr),
+    _consoleHandle(CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL))
 {
-    _consoleHandle = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-
-    if (_consoleHandle == INVALID_HANDLE_VALUE)
-        throw std::runtime_error("invalid console handle value");
-
     _firstBuffer = new CHAR_INFO[_size.X * _size.Y];
     _secondBuffer = new CHAR_INFO[_size.X * _size.Y];
 
@@ -29,6 +25,8 @@ DoubleBufferedTextConsole::~DoubleBufferedTextConsole()
 
 void DoubleBufferedTextConsole::select()
 {
+    if (_consoleHandle == INVALID_HANDLE_VALUE)
+        throw std::runtime_error("invalid console handle value");
     if (!SetConsoleActiveScreenBuffer(_consoleHandle))
         throw std::runtime_error("error with making console buffer active");
 
@@ -57,12 +55,57 @@ void DoubleBufferedTextConsole::select()
                  SWP_NOZORDER | SWP_NOSIZE))
         throw std::runtime_error("SetWindowPos");
 
+    WriteConsoleOutput(_consoleHandle, _firstBuffer, _size, { 0, 0 }, &region);
+}
+
+bool DoubleBufferedTextConsole::modifyCell(COORD symbCoord, CHAR_INFO symbol)
+{
+    SHORT index = getIndex(symbCoord);
+    if (index >= 0)
+    {
+        _secondBuffer[index] = symbol;
+        return true;
+    }
+    else return false;
+}
+
+SHORT DoubleBufferedTextConsole::getIndex(COORD symbCoord)
+{
+    if (symbCoord.X < _size.X && symbCoord.Y < _size.Y &&
+        symbCoord.X >= 0 && symbCoord.Y >= 0)
+        return symbCoord.Y * _size.X + symbCoord.X;
+    else return -1;
+}
+
+COORD DoubleBufferedTextConsole::getXY(SHORT index)
+{
+    return { index % _size.X, index / _size.X };
+}
+
+void DoubleBufferedTextConsole::update()
+{
+    for (int i = 0; i < _size.X * _size.Y; ++i)
+    {
+        ///! have to change, not optimised
+        if (_firstBuffer[i].Char.AsciiChar != _secondBuffer[i].Char.AsciiChar ||
+            _firstBuffer[i].Char.UnicodeChar != _secondBuffer[i].Char.UnicodeChar ||
+            _firstBuffer[i].Attributes != _secondBuffer[i].Attributes)
+        {
+            SMALL_RECT region;
+            region.Left = getXY(i).X;
+            region.Top = getXY(i).Y;
+            region.Right = getXY(i).X;
+            region.Bottom = getXY(i).Y;
+            _firstBuffer[i] = _secondBuffer[i];
+            WriteConsoleOutput(_consoleHandle, _firstBuffer+i, {1, 1}, {0, 0}, &region);
+        }
+    }
+}
+
+/*              make background color
     CHAR_INFO instance;
     instance.Char.UnicodeChar = instance.Char.AsciiChar = rand();
     instance.Attributes = rand();
     for (int i = 0; i < _size.X*_size.Y; ++i)
         _secondBuffer[i] = instance;
-
-//    COORD zeroPoint = { 0, 0 };
-//    WriteConsoleOutput(_consoleHandle, _firstBuffer, _size, zeroPoint, &region);
-}
+*/

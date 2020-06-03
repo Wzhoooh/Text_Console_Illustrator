@@ -14,12 +14,15 @@ namespace ConsoleIllusrators
         ~DoubleBufferedTextConsole();
 
         void select();
-        bool editCell(COORD, char symb, int symbColor);
-        bool editCell(COORD, char symb, int symbColor, int backgroundColor);
+        bool modifyCell(COORD symbCoord, CHAR_INFO symbol);
         void update();
 
     private:
-        HANDLE _consoleHandle;
+        SHORT getIndex(COORD symbCoord);
+        COORD getXY(SHORT index);
+
+    private:
+        const HANDLE _consoleHandle;
         const COORD _size;
         const COORD _leftTop;
         CHAR_INFO* _firstBuffer;
