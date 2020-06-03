@@ -1,0 +1,1 @@
+1) в DoubleBufferedTextConsole::select() вызовы функций SetWindowPos и SetConsoleScreenBufferSize должны быть в разной последовательности, в зависимости от того, сужается буфер относительно окна, или расширяется.

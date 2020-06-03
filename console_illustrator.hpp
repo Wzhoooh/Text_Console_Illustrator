@@ -5,22 +5,27 @@
 #define _WIN32_WINNT 0x0500
 #include <windows.h>
 
-class ConsoleIllusrator
+namespace ConsoleIllusrators
 {
-public:
-    ConsoleIllusrator(COORD size, int backgroundColor);
-    ~ConsoleIllusrator();
+    class DoubleBufferedTextConsole
+    {
+    public:
+        DoubleBufferedTextConsole(COORD leftUp, COORD size);
+        ~DoubleBufferedTextConsole();
 
-    bool editCell(COORD, CHAR_INFO);
-    bool editCell(COORD, CHAR_INFO, int backgroundColor);
-    void update();
+        void select();
+        bool editCell(COORD, char symb, int symbColor);
+        bool editCell(COORD, char symb, int symbColor, int backgroundColor);
+        void update();
 
-private:
-    HANDLE _consoleHandle;
-    int _backgroundColor;
-    COORD _size;
-    CHAR_INFO* _firstBuffer;
-    CHAR_INFO* _secondBuffer;
-};
+    private:
+        HANDLE _consoleHandle;
+        const COORD _size;
+        const COORD _leftTop;
+        CHAR_INFO* _firstBuffer;
+        CHAR_INFO* _secondBuffer;
+    };
+
+}
 
 #endif // CONSOLE_ILLUSTRATOR_HPP_INCLUDED
