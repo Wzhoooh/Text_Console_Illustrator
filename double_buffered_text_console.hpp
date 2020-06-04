@@ -1,5 +1,5 @@
-#ifndef CONSOLE_ILLUSTRATOR_HPP_INCLUDED
-#define CONSOLE_ILLUSTRATOR_HPP_INCLUDED
+#ifndef DOUBLE_BUFFERED_TEXT_CONSOLE_HPP_INCLUDED
+#define DOUBLE_BUFFERED_TEXT_CONSOLE_HPP_INCLUDED
 
 #include <cstddef>
 #define _WIN32_WINNT 0x0500
@@ -14,8 +14,10 @@ namespace ConsoleIllusrators
         ~DoubleBufferedTextConsole();
 
         void select();
-        bool modifyCell(COORD symbCoord, CHAR_INFO symbol);
+        bool putSymbol(COORD symbCoord, CHAR_INFO symbol);
         void update();
+
+        void testOfWriteConsoleOutput(int numCells);
 
     private:
         SHORT getIndex(COORD symbCoord);
@@ -31,4 +33,4 @@ namespace ConsoleIllusrators
 
 }
 
-#endif // CONSOLE_ILLUSTRATOR_HPP_INCLUDED
+#endif // DOUBLE_BUFFERED_TEXT_CONSOLE_HPP_INCLUDED

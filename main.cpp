@@ -2,10 +2,15 @@
 #include <chrono>
 //#include <ctime>
 #include <cstdlib>
-#include "console_illustrator.hpp"
-#include "tests/console_illustrator.hpp"
+#include <conio.h>
+#include "double_buffered_text_console.hpp"
 
 using namespace ConsoleIllusrators;
+
+auto timeMicroseconds()
+{
+    return std::chrono::high_resolution_clock::now();
+}
 
 int main()
 {
@@ -13,7 +18,7 @@ int main()
     {
         HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
         COORD size = GetLargestConsoleWindowSize(handle);
-        DoubleBufferedTextConsole ci_1({50, 50}, {20, 20});
+        DoubleBufferedTextConsole ci_1({0, 0}, {size.X, size.Y});
 
         CHAR_INFO instance_1;
         instance_1.Char.UnicodeChar = instance_1.Char.AsciiChar = 'a';
@@ -26,28 +31,36 @@ int main()
             | FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
 
         ci_1.select();
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < 10; i++)
-            ci_1.modifyCell({i, 3}, instance_1);
-        ci_1.update();
-        for (int i = 0; i < 5; i++)
-            ci_1.modifyCell({8, i}, instance_2);
-        ci_1.update();
-        for (int i = 0; i < 30; i++)
-            ci_1.modifyCell({4, i}, instance_1);
-        ci_1.update();
+        for (int i = 0; i < size.Y; ++i)
+            for (int j = 0; j < size.X; ++j)
+                ci_1.putSymbol({j, i}, instance_1);
 
-        auto elapsed = std::chrono::high_resolution_clock::now() - start;
-        Sleep(5000);
+        int sizeArr = size.X * size.Y;
+        long long time[sizeArr] = {};
+
+        for (int i = 1; i < sizeArr; ++i)
+        {
+auto start = timeMicroseconds();
+            for (int j = 0; j < 1; j++)
+                ci_1.testOfWriteConsoleOutput(i);
+
+auto elapsed = timeMicroseconds() - start;
+            time[i] = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+        }
 
         SetConsoleActiveScreenBuffer(handle);
-        long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-        std::cout << "finish: " << microseconds << " mkrS\n";
+        //long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+        std::cout << "finish: ";
+        for (int i = 1; i < sizeArr; ++i)
+            std::cout << "(" << i << ": " << time[i] << ") ";
     }
     catch(std::exception& e)
     {
         HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleActiveScreenBuffer(handle);
-        std::cerr << "FATAL ERROR: " << e.what();
+        std::cerr << "FATAL ERROR: " << e.what() << "\n";
+        std::cerr << "Press any key to continue...";
+        getch();
+        std::cerr << "\n";
     }
 }

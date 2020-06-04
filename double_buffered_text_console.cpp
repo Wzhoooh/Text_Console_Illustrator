@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <cstdlib>
-#include "console_illustrator.hpp"
+#include "double_buffered_text_console.hpp"
 
 using namespace ConsoleIllusrators;
 
@@ -58,7 +58,7 @@ void DoubleBufferedTextConsole::select()
     WriteConsoleOutput(_consoleHandle, _firstBuffer, _size, { 0, 0 }, &region);
 }
 
-bool DoubleBufferedTextConsole::modifyCell(COORD symbCoord, CHAR_INFO symbol)
+bool DoubleBufferedTextConsole::putSymbol(COORD symbCoord, CHAR_INFO symbol)
 {
     SHORT index = getIndex(symbCoord);
     if (index >= 0)
@@ -99,6 +99,19 @@ void DoubleBufferedTextConsole::update()
             _firstBuffer[i] = _secondBuffer[i];
             WriteConsoleOutput(_consoleHandle, _firstBuffer+i, {1, 1}, {0, 0}, &region);
         }
+    }
+}
+
+void DoubleBufferedTextConsole::testOfWriteConsoleOutput(int numCells)
+{
+    for (int i = 0; i < _size.X * _size.Y; i += numCells)
+    {
+        SMALL_RECT region;
+        region.Left = getXY(i).X;
+        region.Top = getXY(i).Y;
+        region.Right = getXY(i).X + numCells - 1;
+        region.Bottom = getXY(i).Y;
+        WriteConsoleOutput(_consoleHandle, _secondBuffer+i, {1, numCells}, {0, 0}, &region);
     }
 }
 
