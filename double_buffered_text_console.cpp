@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <iostream>
+#include <conio.h>
 #include <cstdlib>
 #include "double_buffered_text_console.hpp"
 
@@ -102,23 +103,18 @@ void DoubleBufferedTextConsole::update()
     }
 }
 
-void DoubleBufferedTextConsole::testOfWriteConsoleOutput(int numCells)
+void DoubleBufferedTextConsole::testOfWriteStrings(int numStrings)
 {
-    for (int i = 0; i < _size.X * _size.Y; i += numCells)
+    SMALL_RECT region;
+    for (int i = 0; i < _size.Y; i += numStrings)
     {
-        SMALL_RECT region;
-        region.Left = getXY(i).X;
-        region.Top = getXY(i).Y;
-        region.Right = getXY(i).X + numCells - 1;
-        region.Bottom = getXY(i).Y;
-        WriteConsoleOutput(_consoleHandle, _secondBuffer+i, {1, numCells}, {0, 0}, &region);
+        region.Left = 0;
+        region.Top = i;
+        region.Right = _size.X - 1;
+        region.Bottom = i + numStrings - 1;
+        WriteConsoleOutput(_consoleHandle, _secondBuffer,
+                        {_size.X, _size.Y}, {0, i}, &region);
     }
 }
 
-/*              make background color
-    CHAR_INFO instance;
-    instance.Char.UnicodeChar = instance.Char.AsciiChar = rand();
-    instance.Attributes = rand();
-    for (int i = 0; i < _size.X*_size.Y; ++i)
-        _secondBuffer[i] = instance;
-*/
+

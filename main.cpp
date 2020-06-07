@@ -16,8 +16,7 @@ int main()
 {
     try
     {
-        HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-        COORD size = GetLargestConsoleWindowSize(handle);
+        COORD size = {135, 45};
         DoubleBufferedTextConsole ci_1({0, 0}, {size.X, size.Y});
 
         CHAR_INFO instance_1;
@@ -26,33 +25,37 @@ int main()
             | FOREGROUND_INTENSITY;
 
         CHAR_INFO instance_2;
-        instance_2.Char.UnicodeChar = instance_2.Char.AsciiChar = '|';
-        instance_2.Attributes = FOREGROUND_RED | BACKGROUND_BLUE
-            | FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
+        instance_2.Char.UnicodeChar = instance_2.Char.AsciiChar = ' ';
+        instance_2.Attributes = BACKGROUND_RED | BACKGROUND_INTENSITY;
 
         ci_1.select();
         for (int i = 0; i < size.Y; ++i)
             for (int j = 0; j < size.X; ++j)
                 ci_1.putSymbol({j, i}, instance_1);
 
-        int sizeArr = size.X * size.Y;
-        long long time[sizeArr] = {};
+        ci_1.putSymbol({5, 0}, instance_2);
+        ci_1.putSymbol({4, 1}, instance_2);
+        ci_1.putSymbol({3, 2}, instance_2);
+        ci_1.putSymbol({2, 3}, instance_2);
+        ci_1.putSymbol({1, 4}, instance_2);
+        ci_1.putSymbol({0, 5}, instance_2);
 
-        for (int i = 1; i < sizeArr; ++i)
+        int sizeArr = size.Y;
+        long long timeStr[sizeArr] = {};
+        int numOfStrs = 1;
+
+        for (int i = 1; i <= sizeArr; ++i)
         {
-auto start = timeMicroseconds();
-            for (int j = 0; j < 1; j++)
-                ci_1.testOfWriteConsoleOutput(i);
+DWORD start = GetTickCount();
+            for (int j = 0; j < 100; ++j)
+                ci_1.testOfWriteStrings(i);
 
-auto elapsed = timeMicroseconds() - start;
-            time[i] = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+DWORD elapsed = GetTickCount() - start;
+            timeStr[i-1] = elapsed;
         }
 
-        SetConsoleActiveScreenBuffer(handle);
-        //long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-        std::cout << "finish: ";
-        for (int i = 1; i < sizeArr; ++i)
-            std::cout << "(" << i << ": " << time[i] << ") ";
+        for (int i = 0; i < sizeArr; ++i)
+            std::cout << i << '\t' << timeStr[i] << '\n';
     }
     catch(std::exception& e)
     {

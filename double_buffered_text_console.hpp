@@ -17,7 +17,7 @@ namespace ConsoleIllusrators
         bool putSymbol(COORD symbCoord, CHAR_INFO symbol);
         void update();
 
-        void testOfWriteConsoleOutput(int numCells);
+        void testOfWriteStrings(int numStrings);
 
     private:
         SHORT getIndex(COORD symbCoord);
