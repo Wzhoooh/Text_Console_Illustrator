@@ -7,13 +7,10 @@
 using namespace ConsoleIllusrators;
 
 DoubleBufferedTextConsole::DoubleBufferedTextConsole(COORD leftTop, COORD size)
-    :  _leftTop(leftTop), _size(size), _firstBuffer(nullptr), _secondBuffer(nullptr),
-    _consoleHandle(CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL))
+    :  _leftTop(leftTop), _size(size),
+    _firstBuffer(new CHAR_INFO[_size.X * _size.Y]),
+    _secondBuffer(new CHAR_INFO[_size.X * _size.Y])
 {
-    _firstBuffer = new CHAR_INFO[_size.X * _size.Y];
-    _secondBuffer = new CHAR_INFO[_size.X * _size.Y];
-
     memset(_secondBuffer, 0, _size.X*_size.Y*sizeof(CHAR_INFO));
     memcpy(_firstBuffer, _secondBuffer, _size.X*_size.Y*sizeof(CHAR_INFO));
 }
@@ -24,8 +21,10 @@ DoubleBufferedTextConsole::~DoubleBufferedTextConsole()
     delete [] _secondBuffer;
 }
 
-void DoubleBufferedTextConsole::select()
+void DoubleBufferedTextConsole::select() noexcept(false)
 {
+    _consoleHandle = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
     if (_consoleHandle == INVALID_HANDLE_VALUE)
         throw std::runtime_error("invalid console handle value");
     if (!SetConsoleActiveScreenBuffer(_consoleHandle))
@@ -59,7 +58,7 @@ void DoubleBufferedTextConsole::select()
     WriteConsoleOutput(_consoleHandle, _firstBuffer, _size, { 0, 0 }, &region);
 }
 
-bool DoubleBufferedTextConsole::putSymbol(COORD symbCoord, CHAR_INFO symbol)
+bool DoubleBufferedTextConsole::put(COORD symbCoord, CHAR_INFO symbol) noexcept
 {
     SHORT index = getIndex(symbCoord);
     if (index >= 0)
@@ -70,7 +69,7 @@ bool DoubleBufferedTextConsole::putSymbol(COORD symbCoord, CHAR_INFO symbol)
     else return false;
 }
 
-SHORT DoubleBufferedTextConsole::getIndex(COORD symbCoord)
+SHORT DoubleBufferedTextConsole::getIndex(COORD symbCoord) const noexcept
 {
     if (symbCoord.X < _size.X && symbCoord.Y < _size.Y &&
         symbCoord.X >= 0 && symbCoord.Y >= 0)
@@ -78,12 +77,21 @@ SHORT DoubleBufferedTextConsole::getIndex(COORD symbCoord)
     else return -1;
 }
 
-COORD DoubleBufferedTextConsole::getXY(SHORT index)
+COORD DoubleBufferedTextConsole::getXY(SHORT index) const noexcept
 {
     return { index % _size.X, index / _size.X };
 }
 
-void DoubleBufferedTextConsole::update()
+CHAR_INFO DoubleBufferedTextConsole::get(COORD symbCoord) const noexcept(false)
+{
+    SHORT index = getIndex(symbCoord);
+    if (index >= 0)
+        return _secondBuffer[index];
+    else
+        throw std::runtime_error("invalid coordinates");
+}
+
+void DoubleBufferedTextConsole::update() noexcept
 {
     for (int i = 0; i < _size.X * _size.Y; ++i)
     {
@@ -103,7 +111,12 @@ void DoubleBufferedTextConsole::update()
     }
 }
 
-void DoubleBufferedTextConsole::testOfWriteStrings(int numStrings)
+COORD DoubleBufferedTextConsole::size() const noexcept
+{
+    return _size;
+}
+
+void DoubleBufferedTextConsole::testOfWriteStrings(int numStrings) noexcept
 {
     SMALL_RECT region;
     for (int i = 0; i < _size.Y; i += numStrings)

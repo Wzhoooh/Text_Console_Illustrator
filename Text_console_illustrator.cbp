@@ -31,6 +31,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="console_cursor.cpp" />
+		<Unit filename="console_cursor.hpp" />
 		<Unit filename="double_buffered_text_console.cpp" />
 		<Unit filename="double_buffered_text_console.hpp" />
 		<Unit filename="main.cpp" />

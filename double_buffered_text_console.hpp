@@ -1,30 +1,32 @@
 #ifndef DOUBLE_BUFFERED_TEXT_CONSOLE_HPP_INCLUDED
 #define DOUBLE_BUFFERED_TEXT_CONSOLE_HPP_INCLUDED
 
-#include <cstddef>
 #define _WIN32_WINNT 0x0500
 #include <windows.h>
 
 namespace ConsoleIllusrators
 {
+    // Strict guarantee of exceptions safety
     class DoubleBufferedTextConsole
     {
     public:
-        DoubleBufferedTextConsole(COORD leftUp, COORD size);
+        DoubleBufferedTextConsole(COORD leftTop, COORD size);
         ~DoubleBufferedTextConsole();
 
-        void select();
-        bool putSymbol(COORD symbCoord, CHAR_INFO symbol);
-        void update();
+        void select() noexcept(false);
+        bool put(COORD symbCoord, CHAR_INFO symbol) noexcept;
+        CHAR_INFO get(COORD symbCoord) const noexcept(false);
+        void update() noexcept;
+        COORD size() const noexcept;
 
-        void testOfWriteStrings(int numStrings);
-
-    private:
-        SHORT getIndex(COORD symbCoord);
-        COORD getXY(SHORT index);
+        void testOfWriteStrings(int numStrings) noexcept;
 
     private:
-        const HANDLE _consoleHandle;
+        SHORT getIndex(COORD symbCoord) const noexcept;
+        COORD getXY(SHORT index) const noexcept;
+
+    private:
+        HANDLE _consoleHandle;
         const COORD _size;
         const COORD _leftTop;
         CHAR_INFO* _firstBuffer;

@@ -4,13 +4,9 @@
 #include <cstdlib>
 #include <conio.h>
 #include "double_buffered_text_console.hpp"
+#include "console_cursor.hpp"
 
 using namespace ConsoleIllusrators;
-
-auto timeMicroseconds()
-{
-    return std::chrono::high_resolution_clock::now();
-}
 
 int main()
 {
@@ -31,14 +27,14 @@ int main()
         ci_1.select();
         for (int i = 0; i < size.Y; ++i)
             for (int j = 0; j < size.X; ++j)
-                ci_1.putSymbol({j, i}, instance_1);
+                ci_1.put({j, i}, instance_1);
 
-        ci_1.putSymbol({5, 0}, instance_2);
-        ci_1.putSymbol({4, 1}, instance_2);
-        ci_1.putSymbol({3, 2}, instance_2);
-        ci_1.putSymbol({2, 3}, instance_2);
-        ci_1.putSymbol({1, 4}, instance_2);
-        ci_1.putSymbol({0, 5}, instance_2);
+        ci_1.put({5, 0}, instance_2);
+        ci_1.put({4, 1}, instance_2);
+        ci_1.put({3, 2}, instance_2);
+        ci_1.put({2, 3}, instance_2);
+        ci_1.put({1, 4}, instance_2);
+        ci_1.put({0, 5}, instance_2);
 
         int sizeArr = size.Y;
         long long timeStr[sizeArr] = {};
