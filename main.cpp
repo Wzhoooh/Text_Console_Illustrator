@@ -5,26 +5,52 @@
 #include <conio.h>
 #include "double_buffered_text_console.hpp"
 #include "console_cursor.hpp"
+#include "text_style_console.hpp"
 
 using namespace ConsoleIllusrators;
+
+void testDoubleBufferedTextConsole();
+void testConsoleCursor();
 
 int main()
 {
     try
     {
-        COORD size = {135, 45};
-        DoubleBufferedTextConsole ci_1({0, 0}, {size.X, size.Y});
+        COORD size = {30, 30};
+        TextStyleConsole console({0, 0}, size);
+        console.style(BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+        console.put("Hello, world!\n\n");
+        console.style(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+        console.put("uuuu\n");
+        console.select();
+        console.update();
+    }
+    catch(std::exception& e)
+    {
+        HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleActiveScreenBuffer(handle);
+        std::cerr << "FATAL ERROR: " << e.what() << "\n";
+        std::cerr << "Press any key to continue...";
+        getch();
+        std::cerr << "\n";
+    }
+}
 
-        CHAR_INFO instance_1;
-        instance_1.Char.UnicodeChar = instance_1.Char.AsciiChar = 'a';
-        instance_1.Attributes = FOREGROUND_BLUE | BACKGROUND_GREEN
-            | FOREGROUND_INTENSITY;
+void testDoubleBufferedTextConsole()
+{
+    COORD size = {30, 30};
+    DoubleBufferedTextConsole ci_1({0, 0}, {size.X, size.Y});
 
-        CHAR_INFO instance_2;
-        instance_2.Char.UnicodeChar = instance_2.Char.AsciiChar = ' ';
-        instance_2.Attributes = BACKGROUND_RED | BACKGROUND_INTENSITY;
+    CHAR_INFO instance_1;
+    instance_1.Char.UnicodeChar = instance_1.Char.AsciiChar = 'a';
+    instance_1.Attributes = FOREGROUND_BLUE | BACKGROUND_GREEN
+        | FOREGROUND_INTENSITY;
 
-        ci_1.select();
+    CHAR_INFO instance_2;
+    instance_2.Char.UnicodeChar = instance_2.Char.AsciiChar = ' ';
+    instance_2.Attributes = BACKGROUND_RED | BACKGROUND_INTENSITY;
+
+    ci_1.select();
         for (int i = 0; i < size.Y; ++i)
             for (int j = 0; j < size.X; ++j)
                 ci_1.put({j, i}, instance_1);
@@ -52,14 +78,43 @@ DWORD elapsed = GetTickCount() - start;
 
         for (int i = 0; i < sizeArr; ++i)
             std::cout << i << '\t' << timeStr[i] << '\n';
-    }
-    catch(std::exception& e)
+}
+
+void testConsoleCursor()
+{
+    COORD size = {30, 30};
+    ConsoleCursor ci_2({0, 0}, {size.X, size.Y});
+
+    CHAR_INFO instance_1;
+    instance_1.Char.UnicodeChar = instance_1.Char.AsciiChar = 'a';
+    instance_1.Attributes = FOREGROUND_BLUE | BACKGROUND_GREEN
+        | FOREGROUND_INTENSITY;
+
+    CHAR_INFO instance_2;
+    instance_2.Char.UnicodeChar = instance_2.Char.AsciiChar = ' ';
+    instance_2.Attributes = BACKGROUND_RED | BACKGROUND_INTENSITY;
+
+    CHAR_INFO enter;
+    enter.Char.UnicodeChar = enter.Char.AsciiChar = '\n';
+    enter.Attributes = BACKGROUND_GREEN | BACKGROUND_INTENSITY;
+
+    ci_2.put(instance_1);
+    ci_2.put(instance_1);
+    ci_2.put(instance_2);
+    ci_2.put(instance_1);
+
+    for (int i = 0; i < 30; ++i)
     {
-        HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-        SetConsoleActiveScreenBuffer(handle);
-        std::cerr << "FATAL ERROR: " << e.what() << "\n";
-        std::cerr << "Press any key to continue...";
-        getch();
-        std::cerr << "\n";
+        ci_2.put(instance_1);
+        ci_2.put(instance_1);
+        ci_2.put(instance_1);
+        ci_2.put(instance_2);
     }
+    ci_2.put(enter);
+    ci_2.put(enter);
+    ci_2.put(instance_2);
+    ci_2.put(instance_1);
+
+    ci_2.select();
+    ci_2.update();
 }

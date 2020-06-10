@@ -14,6 +14,7 @@ namespace ConsoleIllusrators
         bool changeCursor(COORD cursorCoord) noexcept;
         bool put(CHAR_INFO symbol) noexcept;
         void update() noexcept;
+        COORD size() const noexcept;
 
     private:
         DoubleBufferedTextConsole _console;

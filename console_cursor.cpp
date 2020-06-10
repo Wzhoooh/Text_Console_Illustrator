@@ -25,9 +25,25 @@ bool ConsoleCursor::changeCursor(COORD cursorCoord) noexcept
 
 bool ConsoleCursor::put(CHAR_INFO symbol) noexcept
 {
-    _console.put(_cursor, symbol);
+    if (symbol.Char.AsciiChar != '\n')
+        _console.put(_cursor, symbol);
+
+    // moving cursor
+    COORD size = _console.size();
+    // new str
+    if (symbol.Char.AsciiChar == '\n' || _cursor.X == size.X-1)
+    {
+        _cursor.X = 0;
+        _cursor.Y++;
+    }
+    else
+        _cursor.X++;
 }
 void ConsoleCursor::update() noexcept
 {
     _console.update();
+}
+COORD ConsoleCursor::size() const noexcept
+{
+    return _console.size();
 }

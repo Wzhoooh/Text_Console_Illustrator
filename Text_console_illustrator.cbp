@@ -36,6 +36,8 @@
 		<Unit filename="double_buffered_text_console.cpp" />
 		<Unit filename="double_buffered_text_console.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="text_style_console.cpp" />
+		<Unit filename="text_style_console.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
