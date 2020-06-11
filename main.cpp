@@ -18,13 +18,20 @@ int main()
     {
         COORD size = {30, 30};
         TextStyleConsole console({0, 0}, size);
+        console.style(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED);
+        for (int i = 0; i < 30*30; ++i)
+            console.put(" ");
+
+        console.moveCursor({0, 0});
         console.style(BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+        console.put("                          ");
+        console.put("                          ");
         console.put("Hello, world!\n\n");
-        console.style(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+        console.style(BACKGROUND_GREEN | BACKGROUND_INTENSITY | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         console.put("uuuu\n");
-        console.moveToStr(6);
+        console.moveCursor({5, 6});
         console.put("1234\n");
-        console.moveToStr(0);
+        console.moveCursor({1, 0});
         console.put("Hello, \n\n");
         console.select();
         console.update();

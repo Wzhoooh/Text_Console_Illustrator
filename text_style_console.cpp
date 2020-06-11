@@ -28,9 +28,9 @@ void TextStyleConsole::put(const char* str) noexcept
     }
 }
 
-void TextStyleConsole::moveToStr(int numStr)
+void TextStyleConsole::moveCursor(COORD cursorCoord) noexcept
 {
-    _console.moveCursor({0, numStr});
+    _console.moveCursor(cursorCoord);
 }
 
 void TextStyleConsole::update() noexcept
