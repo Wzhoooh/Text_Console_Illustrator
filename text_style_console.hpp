@@ -12,6 +12,7 @@ namespace ConsoleIllusrators
 
         void select() noexcept(false);
         void style(WORD style) noexcept;
+        void moveToStr(int numStr);
         void put(const char*) noexcept;
         void update() noexcept;
         COORD size() const noexcept;

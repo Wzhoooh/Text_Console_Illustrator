@@ -9,10 +9,12 @@ void TextStyleConsole::select() noexcept(false)
 {
     _console.select();
 }
+
 void TextStyleConsole::style(WORD style) noexcept
 {
     _style = style;
 }
+
 void TextStyleConsole::put(const char* str) noexcept
 {
     int len = strlen(str);
@@ -25,10 +27,17 @@ void TextStyleConsole::put(const char* str) noexcept
         _console.put(instance);
     }
 }
+
+void TextStyleConsole::moveToStr(int numStr)
+{
+    _console.moveCursor({0, numStr});
+}
+
 void TextStyleConsole::update() noexcept
 {
     _console.update();
 }
+
 COORD TextStyleConsole::size() const noexcept
 {
     return _console.size();

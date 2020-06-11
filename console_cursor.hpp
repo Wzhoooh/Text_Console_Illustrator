@@ -11,7 +11,7 @@ namespace ConsoleIllusrators
         ConsoleCursor(COORD leftUp, COORD size);
 
         void select() noexcept(false);
-        bool changeCursor(COORD cursorCoord) noexcept;
+        bool moveCursor(COORD cursorCoord) noexcept;
         bool put(CHAR_INFO symbol) noexcept;
         void update() noexcept;
         COORD size() const noexcept;

@@ -22,6 +22,10 @@ int main()
         console.put("Hello, world!\n\n");
         console.style(BACKGROUND_GREEN | BACKGROUND_INTENSITY);
         console.put("uuuu\n");
+        console.moveToStr(6);
+        console.put("1234\n");
+        console.moveToStr(0);
+        console.put("Hello, \n\n");
         console.select();
         console.update();
     }

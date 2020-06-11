@@ -10,7 +10,7 @@ void ConsoleCursor::select() noexcept(false)
     _console.select();
 }
 
-bool ConsoleCursor::changeCursor(COORD cursorCoord) noexcept
+bool ConsoleCursor::moveCursor(COORD cursorCoord) noexcept
 {
     COORD size = _console.size();
     if (cursorCoord.X < size.X && cursorCoord.Y < size.Y &&
